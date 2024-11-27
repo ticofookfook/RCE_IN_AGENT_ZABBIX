@@ -6,7 +6,7 @@ import subprocess
 import time
 ZABBIX_URL = 'http://192.168.25.3:8080/api_jsonrpc.php'
 HEADERS = {'Content-Type': 'application/json'}
-AUTH_TOKEN = 'b0033ebb9e103297104a7c0535b6752bd30c974141cc4d11faa30b19a4a13877'
+AUTH_TOKEN = 'APITOKENxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 IP_SHELL = "10.10.100.6"
 PORT_SERVER_PYTHON = 9000
 PALAVRAS_CHAVE_LINUX = [
