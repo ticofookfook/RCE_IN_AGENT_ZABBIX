@@ -29,13 +29,13 @@ Esta ferramenta foi desenvolvida APENAS para fins educacionais e de testes de se
 
 1. Clone o repositório:
 ```bash
-git clone https://github.com/seu-usuario/zabbix-rce.git
-cd zabbix-rce
+git clone https://github.com/ticofookfook/RCE_IN_AGENT_ZABBIX
+cd RCE_IN_AGENT_ZABBIX
 ```
 
 2. Instale as dependências:
 ```bash
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 3. Configure o arquivo `.env` com suas credenciais:
