@@ -45,6 +45,38 @@ class OSDetector:
             r'^(pc|ws|desktop|laptop|client).*'
         ]
     
+    def detect_os(self, host: Dict) -> Dict[str, any]:
+        """
+        Método principal de detecção de SO para compatibilidade com user_interface
+        
+        Args:
+            host: Dict com informações do host do Zabbix
+            
+        Returns:
+            Dict com os_type e confidence
+        """
+        hostname = host.get('host', '')
+        interfaces = host.get('interfaces', [])
+        
+        result = self.suggest_os_type(hostname, interfaces)
+        
+        # Mapeia o resultado para o formato esperado pela interface
+        os_type = result['suggested_os'].lower() if result['suggested_os'] != 'Unknown' else 'linux'
+        
+        # Converte confiança textual para numérica
+        confidence_map = {
+            'Alta': 0.9,
+            'Média': 0.6,
+            'Baixa': 0.3
+        }
+        
+        confidence = confidence_map.get(result['confidence'], 0.3)
+        
+        return {
+            'os_type': os_type,
+            'confidence': confidence
+        }
+    
     def detect_os_by_hostname(self, hostname: str) -> Optional[str]:
         """
         Detecta SO baseado no nome do host
