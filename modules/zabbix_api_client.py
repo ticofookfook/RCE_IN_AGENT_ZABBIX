@@ -91,12 +91,11 @@ class ZabbixAPIClient:
         """
         self.logger.info("Testando conexão com a API do Zabbix...")
         
-        # Usa uma requisição simples como no backup que funcionava
+        # apiinfo.version NAO precisa de auth - esse era o erro!
         payload = {
             "jsonrpc": "2.0",
             "method": "apiinfo.version",
             "params": {},
-            "auth": self.auth_token,
             "id": 1
         }
         
