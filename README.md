@@ -14,9 +14,6 @@ Esta é uma versão completamente reestruturada do exploit de execução remota 
 - 📝 **Logging Avançado**: Sistema de logs com diferentes níveis
 - ⚙️ **Configuração Flexível**: Gerenciamento centralizado de configurações
 
-## ⚠️ Aviso Legal
-
-**Esta ferramenta foi desenvolvida APENAS para fins educacionais e de testes de segurança autorizados.** O uso desta ferramenta sem autorização explícita pode violar leis e políticas de segurança. O autor não se responsabiliza pelo uso indevido ou ilegal desta ferramenta.
 
 ## 🏗️ Estrutura do Projeto
 
@@ -42,13 +39,13 @@ zabbix-rce-2025/
 
 1. **Clone o repositório:**
 ```bash
-git clone <repository-url>
-cd zabbix-rce-2025
+git clone https://github.com/ticofookfook/RCE_IN_AGENT_ZABBIX.git
+cd RCE_IN_AGENT_ZABBIX
 ```
 
 2. **Instale as dependências:**
 ```bash
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 3. **Configure o arquivo `.env`:**
