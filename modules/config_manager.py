@@ -72,8 +72,8 @@ class ConfigManager:
     
     def _validate_config(self):
         """Valida configurações obrigatórias"""
-        if not self.zabbix.auth_token:
-            raise ValueError("AUTH_TOKEN é obrigatório no arquivo .env")
+        if not self.zabbix.auth_token or self.zabbix.auth_token == 'APITOKENxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx':
+            raise ValueError("AUTH_TOKEN é obrigatório no arquivo .env. Configure um token válido do Zabbix.")
         
         if not self.zabbix.url:
             raise ValueError("ZABBIX_URL é obrigatório no arquivo .env")

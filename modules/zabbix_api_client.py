@@ -91,14 +91,49 @@ class ZabbixAPIClient:
         """
         self.logger.info("Testando conexão com a API do Zabbix...")
         
-        response = self._make_request("apiinfo.version", {})
+        # Usa uma requisição simples como no backup que funcionava
+        payload = {
+            "jsonrpc": "2.0",
+            "method": "apiinfo.version",
+            "params": {},
+            "auth": self.auth_token,
+            "id": 1
+        }
         
-        if response:
-            version = response.get('result', 'Desconhecida')
-            self.logger.info(f"Conectado ao Zabbix versão: {version}")
-            return True
-        else:
-            self.logger.error("Falha ao conectar com a API do Zabbix")
+        try:
+            response = requests.post(
+                self.url, 
+                headers=self.headers, 
+                data=json.dumps(payload), 
+                timeout=self.timeout
+            )
+            
+            if response.status_code != 200:
+                self.logger.error(f"Erro HTTP {response.status_code}: {response.text}")
+                return False
+            
+            response_data = response.json()
+            
+            if "error" in response_data:
+                self.logger.error(f"Erro da API: {response_data['error']}")
+                return False
+            
+            if "result" in response_data:
+                version = response_data['result']
+                self.logger.info(f"Conectado ao Zabbix versão: {version}")
+                return True
+            else:
+                self.logger.error(f"Resposta inválida: {response_data}")
+                return False
+                
+        except requests.exceptions.RequestException as e:
+            self.logger.error(f"Erro de conexão: {e}")
+            return False
+        except json.JSONDecodeError as e:
+            self.logger.error(f"Erro ao decodificar JSON: {e}")
+            return False
+        except Exception as e:
+            self.logger.error(f"Erro inesperado: {e}")
             return False
     
     def get_hosts(self) -> Optional[List[Dict]]:
